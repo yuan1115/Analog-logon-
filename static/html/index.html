@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>易撰数据</title>
+	<link rel="stylesheet" type="text/css" href="./static/css/main.css">
+	<script type="text/javascript" src="./static/js/jquery-1.9.1/jquery-1.9.1.js"></script>
+</head>
+<body>
+	<form action="javascript:;" id="formdata">
+		<div class="rows">
+			<div class="row" style="width: 5%;text-align: center;padding-top: 15px">来源</div>
+			<div class="row" style="width: 95%">
+				<?php 
+					foreach ($plat['Data'] as $k => $v) {
+						echo '<div onclick="plat(1,this)" class="plat" id="plat'.$v['pid'].'" data-id="'.$v['pid'].'">'.$v['platename'].'</div>';
+					}
+				?>
+				<input type="hidden" name="CID" id="val1" value="0">	
+				<div style="clear:both;"></div>		
+			</div>
+			<div style="clear:both;"></div>	
+		</div>
+		<div class="rows">
+			<div class="row" style="width: 5%;text-align: center;padding-top: 15px">领域</div>
+			<div class="row" style="width: 95%">
+				<div class="cate">
+					<?php 
+						foreach ($category['Data'] as $k => $v) {
+							echo '<div onclick="plat(2,this)" class="plat" id="cate'.$v['acid'].'" data-id="'.$v['acid'].'">'.$v['acdes'].'</div>';
+						}
+					?>
+				</div>
+				<input type="hidden" name="where[0][Name]"  value="acid">
+				<input type="hidden" name="where[0][Value]" id="val2" >
+				<input type="hidden" name="where[0][Symbol]"  value='1'>
+				<div style="clear:both;"></div>		
+			</div>
+			<div style="clear:both;"></div>	
+		</div>
+		<div class="rows">
+			<div class="row" style="width: 5%;text-align: center;padding-top: 15px">排序</div>
+			<div class="row" style="width: 95%">
+				<div onclick="plat(3,this)" class="plat" data-id="hmctdate">发布时间</div>
+				<div onclick="plat(3,this)" class="plat" data-id="hmctamout">阅读量</div>
+				<div onclick="plat(3,this)" class="plat" data-id="hmctcommentnum">评论数</div>
+				<input type="hidden" name="OrderBy[0][Name]" id="val3" value="hmctdate">
+				<input type="hidden" name="OrderBy[0][OrderByType]" value="2">
+				<div style="clear:both;"></div>		
+			</div>
+			<div style="clear:both;"></div>	
+		</div>
+		<div class="rows">
+			<div class="row" style="width: 5%;text-align: center;padding-top: 15px">类型</div>
+			<div class="row" style="width: 95%">
+				<div onclick="plat(4,this)" class="plat" data-id="0">全部</div>
+				<div onclick="plat(4,this)" class="plat" id='type1' data-id="1">文章</div>
+				<div onclick="plat(4,this)" class="plat" id='type2' data-id="2">图集</div>
+				<div onclick="plat(4,this)" class="plat" id='type3' data-id="3">视频</div>
+				<input type="hidden" name="where[1][Name]"  value="hmcttype">
+				<input type="hidden" name="where[1][Value]" id="val4" >
+				<input type="hidden" name="where[1][Symbol]"  value="1">
+				<!-- <input type="hidden" name="hmcttype" id="val4" data-Symbol='1'> -->
+				<div style="clear:both;"></div>		
+			</div>
+			<div style="clear:both;"></div>	
+		</div>
+		<div class="rows">
+			<div class="row" style="width: 5%;text-align: center;padding-top: 15px">阅读量</div>
+			<div class="row" style="width: 95%">
+				<div class="plat">
+					<input type="hidden" name="where[2][Name]" value="hmctamout">
+					<input type="txet" name="where[2][Value]" id="val5"  value="10000">
+					<input type="hidden" name="where[2][Symbol]" id="val5"  value="5">
+				</div>
+				<div style="clear:both;"></div>		
+			</div>
+			<div style="clear:both;"></div>	
+		</div>
+		<div class="rows">
+			<div class="row" style="width: 5%;text-align: center;padding-top: 15px">时间</div>
+			<div class="row" style="width: 85%">
+				<div class="plat">
+					<input type="text" name="HMCTDate" id="val6" data-Symbol='5,6' value="1">天	
+				</div>
+				<div style="clear:both;"></div>		
+			</div>
+			<div class="row">
+				<input type="hidden" name="PageIndex" id="PageIndex">
+				<button onclick="select()" style="padding: 5px 20px;background: rgba(50,179,247,.15);color: #32b3f7;border-radius: 5px;border: 0;cursor: pointer;">搜索</button>	
+			</div>
+			<div style="clear:both;"></div>
+		</div>
+	</form>
+	<div class="data">
+		<table id="data" style="text-align: center;">
+		</table>
+	</div>
+	<div class="page">
+		
+	</div>
+</body>
+<style type="text/css">
+	.row{float: left;font-size: 0.8rem}
+	.plat{padding:5px 10px;margin:5px 10px;float: left}
+	.active{background: rgba(50,179,247,.15);color: #32b3f7;border-radius:5px}
+	.plat:hover{color: #32b3f7;cursor: pointer;}
+	.data td{padding: 5px 10px;}
+	.data tr{border: 1px solid #ddd}
+</style>
+<script type="text/javascript">
+	$(".rows").each(function(){
+		$(this).find(".plat").first().addClass("active")
+	})
+	function plat(id,obj){
+		var val = $(obj).data("id")
+		if(id==1){
+			loading('加载分类中....')
+			$.post('./index.php?action=getCate',{cid:val},function(res){
+				var res = eval("("+res+")")
+				var str = ''
+				for(var i in res['Data']){
+					str += '<div onclick="plat(2,this)" class="plat" id="cate'+res['Data'][i]['acid']+'" data-id="'+res['Data'][i]['acid']+'">'+res['Data'][i]['acdes']+'</div>'
+				}
+				$(".cate").html(str)
+				$(".cate").find(".plat").first().addClass('active')
+				$("#val2").val(0)
+				Cloading()
+			})
+		}
+		$("#val"+id).val(val)
+		$(obj).addClass('active').siblings().removeClass('active')
+	}
+	function loading(title=''){
+		var title = title?title:'数据加载中，请稍后...'
+		var str = "<div id='loading' style='position:absolute;top:0;width:100%;height:150%;z-index:999;background:#000;opacity:0.8;'><div style='color:red;position:absolute;top:35%;text-align:center;width:100%'>"+title+"</div></div>"
+		$("body").append(str)
+	}
+	function Cloading(){
+		$("#loading").remove()
+	}
+	function select(){
+		loading()
+		var data = $("#formdata").serialize()
+		$.post('./index.php?action=yizhuan',data,function(res){
+			$("#data").html('')
+			$(".page").html('')
+			var res = eval("("+res+")")
+			var str = "<tr><td>标题</td><td>来源</td><td>作者</td><td>领域</td><td>类型</td><td>时间</td><td>阅读</td><td>评论</td></tr>"
+			if(res['Data']){
+				for(var i in res['Data']['List']){
+					var apid = $("#plat"+res['Data']['List'][i]['apid']).text()
+					var acid = $("#cate"+res['Data']['List'][i]['acid']).text()
+					var type = $("#type"+res['Data']['List'][i]['hmcttype']).text()
+					str += '<tr class="datalist">'
+					str += "<td><a target='view_window' href='./index.php?action=toUrl&data="+res['Data']['List'][i]['hmcturl']+"'>"+res['Data']['List'][i]['hmcttitle']+"</a></td>"
+					str += "<td>"+apid+"</td>"
+					str += "<td>"+res['Data']['List'][i]['hmctsource']+"</td>"
+					str += "<td>"+acid+"</td>"
+					str += "<td>"+type+"</td>"
+					str += "<td>"+res['Data']['List'][i]['hmctdate']+"</td>"
+					str += "<td>"+res['Data']['List'][i]['hmctamout']+"</td>"
+					str += "<td>"+res['Data']['List'][i]['hmctcommentnum']+"</td>"
+					str += '</tr>'	
+				}
+				var cur = res['Data']['PageIndex']
+				var pagecount = res['Data']['PageCount']
+				var page = '<div style="text-align:center;padding:20px"><span onclick="pageChan(1,'+cur+')" style="cursor:pointer;padding:5px 20px;margin-left:10px">《</span><span>当前页'+cur+',共'+pagecount+'页</span><span style="cursor:pointer;padding:5px 10px;margin-left:10px" onclick="pageChan(2,'+cur+','+pagecount+')">》</span><input type="text" id="pageto" value="1"/><span style="cursor:pointer;padding:5px 20px;margin-left:10px" onclick="pageChan(3)">跳转</span></div>'
+			}else{
+				str = "<p style='padding:1rem;text-align:center'>没有相关数据</p>"
+				var page = ''
+			}
+			$("#data").append(str)
+			$(".page").append(page)
+			Cloading()
+		})
+	}
+	function pageChan(type,page='',allpage=''){
+		var PageIndex
+		if(type==1){
+			if(page<=1){
+				PageIndex = 1
+			}else{
+				PageIndex = page-1
+			}
+		}
+		if(type==2){
+			if(page>=allpage){
+				PageIndex = allpage
+			}else{
+				PageIndex = page+1
+			}
+		}
+		if(type==3){
+			PageIndex = $("#pageto").val()
+		}
+		$("#PageIndex").val(PageIndex)
+		select()
+	}
+</script>
+</html>
