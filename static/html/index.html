@@ -4,6 +4,7 @@
 	<title>易撰数据</title>
 	<link rel="stylesheet" type="text/css" href="./static/css/main.css">
 	<script type="text/javascript" src="./static/js/jquery-1.9.1/jquery-1.9.1.js"></script>
+	<!-- <script type="text/javascript" src="./static/js/vendor.js"></script> -->
 </head>
 <body>
 	<form action="javascript:;" id="formdata">
@@ -78,11 +79,32 @@
 		</div>
 		<div class="rows">
 			<div class="row" style="width: 5%;text-align: center;padding-top: 15px">时间</div>
-			<div class="row" style="width: 85%">
+			<div class="row" style="width: 20%">
 				<div class="plat">
 					<input type="text" name="HMCTDate" id="val6" data-Symbol='5,6' value="1">天	
 				</div>
 				<div style="clear:both;"></div>		
+			</div>
+			<div class="row" style="width: 2%;text-align: center;padding-top: 15px">
+				cp:
+			</div>
+			<div class="row" style="width: 20%">
+				<div class="plat">
+					<input type="text" name="cp" id="cp">
+				</div>
+				<div style="clear:both;"></div>		
+			</div>
+			<div class="row" style="width: 2%;text-align: center;padding-top: 15px">
+				sp:
+			</div>
+			<div class="row" style="width: 20%">
+				<div class="plat">
+					<input type="text" name="sp" id="sp">
+				</div>
+				<div style="clear:both;"></div>		
+			</div>
+			<div class="row help" style="width: 25%;line-height: 58px;color: red;cursor: pointer;">
+				<a href="./index.php?action=help" target="_blank">如何获取参数cp/sp?</a>
 			</div>
 			<div class="row">
 				<input type="hidden" name="PageIndex" id="PageIndex">
@@ -138,7 +160,50 @@
 	function Cloading(){
 		$("#loading").remove()
 	}
+	// function getcp() {
+	//     return Math.random().toString(36).substr(2)
+	// }
+	// function encrypt(cp,t) {
+	//     if ("" === t)
+	//         return "";
+	//     var e = "";
+	//     if (cp) {
+	//         var i = !0
+	//           , a = !1
+	//           , n = void 0;
+	//         try {
+	//             for (var o, r = s()(cp); !(i = (o = r.next()).done); i = !0) {
+	//                 e += (t % o.value.charCodeAt()).toString(36)
+	//             }
+	//         } catch (t) {
+	//             a = !0,
+	//             n = t
+	//         } finally {
+	//             try {
+	//                 !i && r.return && r.return()
+	//             } finally {
+	//                 if (a)
+	//                     throw n
+	//             }
+	//         }
+	//     }
+	//     return e
+	// }
 	function select(){
+		// var b = +Date.now().toString().slice(0, 10) + parseInt(1541489278)-Date.now().toString().slice(0, 10)
+		// var t = 2 * (b -= b % 60) % 16432 * (2 * b % 16432) % 1e5
+		// var cp = getcp()
+		// var sp = encrypt(cp,t)
+		// console.log(cp)
+		// console.log(sp)
+		// return false
+		// 
+		var cp = $("#cp").val()
+		var sp = $("#sp").val()
+		if(cp.length<=0||sp.length<=0){
+			alert("cp和sp必填")
+			return false
+		}
 		loading()
 		var data = $("#formdata").serialize()
 		$.post('./index.php?action=yizhuan',data,function(res){
@@ -166,7 +231,12 @@
 				var pagecount = res['Data']['PageCount']
 				var page = '<div style="text-align:center;padding:20px"><span onclick="pageChan(1,'+cur+')" style="cursor:pointer;padding:5px 20px;margin-left:10px">《</span><span>当前页'+cur+',共'+pagecount+'页</span><span style="cursor:pointer;padding:5px 10px;margin-left:10px" onclick="pageChan(2,'+cur+','+pagecount+')">》</span><input type="text" id="pageto" value="1"/><span style="cursor:pointer;padding:5px 20px;margin-left:10px" onclick="pageChan(3)">跳转</span></div>'
 			}else{
-				str = "<p style='padding:1rem;text-align:center'>没有相关数据</p>"
+				if(res.Code==-1000){
+					alert("请重新获取cp和sp")
+					str = "<p style='padding:1rem;text-align:center'>cp和sp失效，请重新获取</p>"
+				}else{
+					str = "<p style='padding:1rem;text-align:center'>没有相关数据</p>"
+				}	
 				var page = ''
 			}
 			$("#data").append(str)

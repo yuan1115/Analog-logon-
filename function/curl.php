@@ -60,8 +60,8 @@ function getDatalogin($url,$data='',$isTo=0){
     $max_time = isset($_SESSION['max_time'])?$_SESSION['max_time']:0;
     if($max_time-time()<=0){
         $login = "https://zmt.yizhuan5.com/Account/Login/LoginIn";
-        $loginData['userName'] = '账号';
-        $loginData['userPwd'] = '密码';
+        $loginData['userName'] = '15620161735';
+        $loginData['userPwd'] = 'runyin998';
         $loginData['Remember'] = 'true';
         $list = _GetContent($login,$loginData,$cookie_file);
         $_SESSION['max_time'] = time()+3600;

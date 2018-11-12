@@ -27,6 +27,8 @@ if($_POST){
 		$data['where'][$i]['Value'] = date('Y-m-d 00:00',time()-($list['HMCTDate']*60*60*24*7));
 		$data['where'][$i+1]['Value'] = date('Y-m-d 00:00');
 	}
+	$data['cp'] = $list['cp'];
+	$data['sp'] = $list['sp'];
 	$listUrl = "https://zmt.yizhuan5.com/Mediabrary/data/HotMContent";
 	$list = getDatalogin($listUrl,$data);
 	print_r($list);

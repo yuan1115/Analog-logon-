@@ -1,7 +1,6 @@
 <?php 
-//账号密码固定的
 if($_POST){
-	if($_POST['username']=='账号'&&$_POST['password']=='密码'){
+	if($_POST['username']=='润银创世'&&$_POST['password']=='runyin998'){
 		$_SESSION['token'] = 1;
 		$data['status'] = 1;
 		$data['msg'] = '登录成功';
